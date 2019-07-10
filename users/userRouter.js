@@ -41,7 +41,7 @@ router.get('/:id', validateUserId, async (req, res) => {
       res.status(200).json(user);
     })
     .catch(err => {
-      res.status(500).json({ error: 'Unable to add post' });
+      res.status(500).json({ error: 'Unable to add user' });
     });
 });
 
@@ -51,11 +51,19 @@ router.get('/:id/posts', validateUserId, (req, res) => {
       res.status(200).json(posts);
     })
     .catch(err => {
-      res.status(500).json({ error: 'Unable to add post' });
+      res.status(500).json({ error: 'Unable to get posts' });
     });
 });
 
-router.delete('/:id', (req, res) => {});
+router.delete('/:id', validateUserId, (req, res) => {
+  Users.remove(req.params.id)
+    .then(user => {
+      res.status(204).end();
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Unable to delete user' });
+    });
+});
 
 router.put('/:id', (req, res) => {});
 
