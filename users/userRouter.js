@@ -45,7 +45,15 @@ router.get('/:id', validateUserId, async (req, res) => {
     });
 });
 
-router.get('/:id/posts', (req, res) => {});
+router.get('/:id/posts', validateUserId, (req, res) => {
+  Posts.get()
+    .then(posts => {
+      res.status(200).json(posts);
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Unable to add post' });
+    });
+});
 
 router.delete('/:id', (req, res) => {});
 
