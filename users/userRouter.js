@@ -18,7 +18,6 @@ router.post('/', validateUser, (req, res) => {
 
 router.post('/:id/posts', validateUserId, validatePost, (req, res) => {
   const newPost = { user_id: req.user.id, ...req.body };
-  console.log(newPost);
   Posts.insert(newPost)
     .then(post => {
       res.status(201).json(post);
@@ -36,7 +35,15 @@ router.get('/', (req, res) => {
     .catch();
 });
 
-router.get('/:id', async (req, res) => {});
+router.get('/:id', validateUserId, async (req, res) => {
+  Users.getById(req.params.id)
+    .then(user => {
+      res.status(200).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Unable to add post' });
+    });
+});
 
 router.get('/:id/posts', (req, res) => {});
 
@@ -48,10 +55,8 @@ router.put('/:id', (req, res) => {});
 
 function validateUserId(req, res, next) {
   const { id } = req.params;
-  console.log('validating UserID', id);
   Users.getById(id)
     .then(user => {
-      console.log(user);
       if (user) {
         req.user = user;
         next();
