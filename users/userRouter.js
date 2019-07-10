@@ -23,10 +23,10 @@ router.get('/', (req, res) => {
     .catch();
 });
 
-router.get('/:id', (req, res) => {
-  const { id } = req.params;
-
-  Users.getById(id);
+router.get('/:id', async (req, res) => {
+  try {
+    const user = await Users.getById(req.params.id);
+  } catch {}
 });
 
 router.get('/:id/posts', (req, res) => {});
@@ -37,7 +37,21 @@ router.put('/:id', (req, res) => {});
 
 //custom middleware
 
-function validateUserId(req, res, next) {}
+function validateUserId(req, res, next) {
+  const { id } = req.params.id;
+
+  Users.getById(id)
+    .then(user => {
+      if (user) {
+        next();
+      } else {
+        res.status(400).json({ message: 'invalid user id' });
+      }
+    })
+    .catch(err => {
+      res.status(500).json({ error: 'Server broken' });
+    });
+}
 
 function validateUser(req, res, next) {}
 
